@@ -1,5 +1,9 @@
 package com.awkwardape.photo.gae.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * Created with IntelliJ IDEA.
  * User: tbeauvais
@@ -20,5 +24,18 @@ public final class GaeUtils {
         }
 
         return servingUrl;
+    }
+
+    public static byte[] getBytes(InputStream is) throws IOException {
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        int len;
+        byte[] data = new byte[10000];
+        while ((len = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, len);
+        }
+
+        buffer.flush();
+        return buffer.toByteArray();
     }
 }

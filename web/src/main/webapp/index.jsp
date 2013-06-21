@@ -12,7 +12,7 @@
             for (var i = 0; i < 20; i++) {
                 $("<img/>", {
                     'src': '/images/clear.gif',
-                    'data-original': '/random?height=' + container.height(),
+                    'data-original': '/image/random?height=' + container.height(),
                     'height': '100%',
                     'class': 'lazy'
                 }).appendTo(container);

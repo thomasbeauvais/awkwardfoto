@@ -1,19 +1,17 @@
 package com.awkwardape.photo.gae.controller;
 
 /**
- * Created with IntelliJ IDEA.
- * User: tbeauvais
- * Date: 6/8/13
- * Time: 4:59 PM
- * To change this template use File | Settings | File Templates.
- */
+* Created with IntelliJ IDEA.
+* User: tbeauvais
+* Date: 6/8/13
+* Time: 4:59 PM
+* To change this template use File | Settings | File Templates.
+*/
 import com.awkwardape.photo.gae.dao.ImageDao;
+import com.awkwardape.photo.gae.util.GaeUtils;
 import com.awkwardape.photo.model.Image;
 import com.google.appengine.api.blobstore.*;
-import com.google.appengine.api.files.AppEngineFile;
-import com.google.appengine.api.files.FileService;
-import com.google.appengine.api.files.FileServiceFactory;
-import com.google.appengine.api.files.FileWriteChannel;
+import com.google.appengine.api.files.*;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
@@ -35,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Controller
-@RequestMapping( value = "/" )
+@RequestMapping( value = "/image" )
 public class ImageController {
 
     @Autowired
@@ -50,9 +48,10 @@ public class ImageController {
     @ResponseBody
     @RequestMapping( value = "/upload", method = RequestMethod.POST)
     public String imageUpload(HttpServletRequest req) {
-        BlobstoreService blobstoreService   = BlobstoreServiceFactory.getBlobstoreService();
+        final BlobstoreService blobstoreService     = BlobstoreServiceFactory.getBlobstoreService();
+        final ImagesService imagesService           = ImagesServiceFactory.getImagesService();
 
-        final StringBuffer returnBuffer = new StringBuffer();
+        final StringBuffer returnBuffer             = new StringBuffer();
         final Map<String, List<BlobKey>> blobKeyMap = blobstoreService.getUploads(req);
         final Set<String> keySet                    = blobKeyMap.keySet();
         for ( String key : keySet ) {
@@ -61,7 +60,23 @@ public class ImageController {
             for ( BlobKey blobKey : blobKeys ) {
                 final BlobInfo blobInfo             = new BlobInfoFactory().loadBlobInfo(blobKey);
                 final Image image                   = new Image();
-                image.setBlobKey( blobKey.getKeyString() );
+                image.setBlobKey(blobKey.getKeyString());
+
+                // TODO:  Find out if this is really the best way...
+                // TODO:  I think that the  bytes should already be accessible in the HttpServletRequest..
+                // This is a lot of crap to get the width/height
+                try {
+                    FileService fileService = FileServiceFactory.getFileService();
+                    AppEngineFile blobFile = fileService.getBlobFile(blobKey);
+                    FileReadChannel readChannel = fileService.openReadChannel(blobFile, false);
+                    byte[] imageData = GaeUtils.getBytes(Channels.newInputStream(readChannel));
+                    com.google.appengine.api.images.Image oldImage = ImagesServiceFactory.makeImage(imageData);
+
+                    image.setWidth( oldImage.getWidth() );
+                    image.setHeight( oldImage.getHeight() );
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
                 // The ImageService is terrible for resizing then storing to the BlobStore
                 // We are opting to create a serving URL each time.  It will use more CPU but

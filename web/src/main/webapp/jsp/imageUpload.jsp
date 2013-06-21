@@ -57,8 +57,8 @@
             $(':button').click(function(){
                 var formData = new FormData($('form')[0]);
                 $.ajax({
-//                    url: '/upload?uploadUrl=' + encodeURIComponent( '/imageUpload' ),  //server script to process data
-                    url: '<%= blobstoreService.createUploadUrl("/upload") %>',  //server script to process data
+//                    url: '/upload?uploadUrl=' + encodeURIComponent( '/image/pload' ),  //server script to process data
+                    url: '<%= blobstoreService.createUploadUrl("/image/upload") %>',  //server script to process data
                     type: 'POST',
                     xhr: function() {  // custom xhr
                         var myXhr = $.ajaxSettings.xhr();

@@ -11,10 +11,11 @@
     <properties>
         <gae.version>1.8.0</gae.version>
         <maven-gae-plugin.version>0.9.4</maven-gae-plugin.version>
-        <spring.version>3.1.1.RELEASE</spring.version>
+        <spring.version>3.2.2.RELEASE</spring.version>
         <datanucleus.version>1.1.5</datanucleus.version>
         <slf4j.version>1.5.11</slf4j.version>
         <junit.version>4.11</junit.version>
+        <jackson.version>1.9.10</jackson.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -65,12 +66,6 @@
                     <webappDirectory>${output.rootDirectory}</webappDirectory>
 
                     <webResources>
-                        <resource>
-                            <directory>${project.basedir}/../flex/target</directory>
-                            <includes>
-                                <include>Main.swf</include>
-                            </includes>
-                        </resource>
                     </webResources>
                 </configuration>
             </plugin>
@@ -376,6 +371,13 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20070829</version>
+        </dependency>
+
+        <!-- Jackson JSON Mapper -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <!-- Testing -->
