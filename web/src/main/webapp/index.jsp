@@ -5,24 +5,33 @@
     <script src="/js/jquery.lazyload.js"></script>
 
     <script>
+        function elementloaded( element ) {
+            console.log( element );
+        }
         $(document).ready(function () {
-            var container = $("#gallery");
+            $.getJSON('debug/list', function(response) {
+                var container = $("<div/>", {id:"gallery"}).appendTo($("body"));
 
-            // Adding a lot of images
-            for (var i = 0; i < 20; i++) {
-                $("<img/>", {
-                    'src': '/images/clear.gif',
-                    'data-original': '/image/random?height=' + container.height(),
-                    'height': '100%',
-                    'class': 'lazy'
-                }).appendTo(container);
-            }
+                for (var i = 0; i < response.length; i++) {
+                    var obj = response[ i ];
 
-            $("img.lazy").show().lazyload({
-//                threshold: 500,
-                effect: 'fadeIn',
-                effectspeed: 2000,
-                container: container
+                    var url = '/image/download?key=' + obj.blobKey + '&height=' + container.height();
+                    var clr = '/debug/scale?key=' + obj.blobKey + '&height=' + container.height();
+                    $("<img/>", {
+                        'src': clr,
+                        'data-original': url,
+                        'height': '100%',
+                        'class': 'lazy'
+                    }).appendTo(container);
+                }
+
+                $("img.lazy").show().lazyload({
+//                        threshold: 500,
+                    effect: 'fadeIn',
+                    effectspeed: 2000,
+                    elementloaded: elementloaded,
+                    container: container
+                });
             });
         });
     </script>
@@ -33,7 +42,7 @@
         #gallery {
             width: 100%;
             height: 100%;
-            overflow: scroll;
+            overflow: auto;
             white-space: nowrap;
         }
 
@@ -44,6 +53,6 @@
     </style>
 </head>
 <body>
-<div id="gallery"/>
+<%--<div id="gallery"/>--%>
 </body>
 </html>

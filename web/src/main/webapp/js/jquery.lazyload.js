@@ -26,6 +26,7 @@
             container       : window,
             data_attribute  : "original",
             skip_invisible  : true,
+            elementloaded   : null,
             appear          : null,
             load            : null
         };
@@ -97,11 +98,16 @@
                     $("<img />")
                         .bind("load", function() {
                             $self
-                                .hide()
+//                                .hide()
                                 .attr("src", $self.data(settings.data_attribute));
                             $self.bind( "load", function() {
                                 /* Do the effect AFTER the data has been loaded */
-                                $self[settings.effect](settings.effect_speed)
+//                                $self[settings.effect](settings.effect_speed)
+                                $self.hide().fadeIn(2000)
+
+                                if ( elementloaded != null ) {
+                                    elementloaded.call(null, "hey");
+                                }
                             } );
                             self.loaded = true;
 

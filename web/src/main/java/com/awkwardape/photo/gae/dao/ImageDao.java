@@ -23,11 +23,21 @@ public class ImageDao<T extends Image> {
     }
 
     public Image get(String key) {
-        Query query = entityManager.createQuery("select o from " + Image.class.getName() + " o where o.key= :key");
-        query.setParameter("key", key);
+        Query query = entityManager.createQuery("select o from " + Image.class.getName() + " o where o.id= :id");
+        query.setParameter("id", key);
         query.setMaxResults(1);
 
         Image image = (Image) query.getSingleResult();
+
+        return image;
+    }
+
+    public Image getImageFromBlobKey(String blobKey) {
+        Query query = entityManager.createQuery("select o from " + Image.class.getName() + " o where o.blobKey= :blobKey");
+        query.setParameter("blobKey", blobKey);
+        query.setMaxResults(1);
+
+        final Image image = (Image) query.getSingleResult();
 
         return image;
     }

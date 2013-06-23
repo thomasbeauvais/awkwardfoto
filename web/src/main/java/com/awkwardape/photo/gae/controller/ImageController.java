@@ -125,10 +125,10 @@ public class ImageController {
      * @throws IOException
      */
     @Transactional
-    @RequestMapping( value = "/image", method = RequestMethod.GET )
-    public void downloadImage( @RequestParam(required = true) String key,
-                       @RequestParam("0") int width,
-                       @RequestParam("0") int height,
+    @RequestMapping( value = "/download", method = RequestMethod.GET )
+    public void download( @RequestParam(required = true) String key,
+                       @RequestParam(defaultValue = "0") int width,
+                       @RequestParam(defaultValue = "0") int height,
                        HttpServletRequest req,
                        HttpServletResponse res ) throws IOException {
         final BlobKey blobKey                                   = new BlobKey( key );
@@ -185,7 +185,7 @@ public class ImageController {
             final int index                         = s_index++ % objects.length;
             final Image image                       = (Image) imageDao.getAll().toArray()[index];
 
-            downloadImage(image.getBlobKey(), 0, 0, req, res);
+            download(image.getBlobKey(), 0, 0, req, res);
         }
 
         res.getWriter().println("No images loaded.");
