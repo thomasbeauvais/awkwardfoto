@@ -8,8 +8,9 @@
         function elementloaded( element ) {
             console.log( element );
         }
+
         $(document).ready(function () {
-            $.getJSON('debug/list', function(response) {
+            $.getJSON('/debug/list', function(response) {
                 var container = $("<div/>", {id:"gallery"}).appendTo($("body"));
 
                 for (var i = 0; i < response.length; i++) {
@@ -25,7 +26,7 @@
                     }).appendTo(container);
                 }
 
-                $("img.lazy").show().lazyload({
+                var object = $("img.lazy").show().lazyload({
 //                        threshold: 500,
                     effect: 'fadeIn',
                     effectspeed: 2000,

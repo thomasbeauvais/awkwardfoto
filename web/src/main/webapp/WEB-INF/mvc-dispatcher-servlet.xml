@@ -15,41 +15,12 @@
 
     <mvc:annotation-driven />
 
+    <!-- Include the default-servlet-handler to field '/' requests -->
+    <mvc:default-servlet-handler/>
+
     <context:annotation-config />
 
     <context:component-scan base-package="com.awkwardape.photo"/>
-
-    <!--
-    <bean id="jsonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
-
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-        <property name="messageConverters">
-            <list>
-                <ref bean="jsonHttpMessageConverter" />
-            </list>
-        </property>
-    </bean>
-    -->
-
-    <!--
-    tells spring to render messages sent from the server to the client
-    using JsonView
-    -->
-    <!--
-    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-        <property name="mediaTypes">
-            <map>
-                <entry key="json" value="application/json" />
-            </map>
-        </property>
-        <property name="defaultContentType" value="application/json" />
-        <property name="defaultViews">
-            <list>
-                <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
-            </list>
-        </property>
-    </bean>
-    -->
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 

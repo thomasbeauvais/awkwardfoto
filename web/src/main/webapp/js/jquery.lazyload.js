@@ -33,24 +33,35 @@
 
         function update() {
             var counter = 0;
-      
+
             elements.each(function() {
                 var $this = $(this);
+
                 if (settings.skip_invisible && !$this.is(":visible")) {
                     return;
                 }
-                if ($.abovethetop(this, settings) ||
-                    $.leftofbegin(this, settings)) {
+
+                console.log ( 'above\t' + $.abovethetop(this, settings) );
+                console.log ( 'left\t' + $.leftofbegin(this, settings) );
+                console.log ( 'right\t' + $.rightoffold(this, settings));
+                console.log ( 'top\t\t' + $.abovethetop(this, settings) );
+                console.log ( 'below\t' + $.belowthefold(this, settings) );
+                console.log ( '\r\n' );
+
+//                if ($.leftofbegin(this, settings)) {
+//                    $this.trigger("appear");
+//                } else
+                if ($.abovethetop(this, settings) || $.leftofbegin(this, settings) ) {
                         /* Nothing. */
-                } else if (!$.belowthefold(this, settings) &&
-                    !$.rightoffold(this, settings)) {
+                } else if (!$.belowthefold(this, settings) && !$.rightoffold(this, settings)) {
                         $this.trigger("appear");
+
                         /* if we found an image we'll load, reset the counter */
-                        counter = 0;
+//                        counter = 0;
                 } else {
-                    if (++counter > settings.failure_limit) {
-                        return false;
-                    }
+//                    if (++counter > settings.failure_limit) {
+//                        return false;
+//                    }
                 }
             });
 
@@ -111,8 +122,6 @@
                             } );
                             self.loaded = true;
 
-
-
                             /* Remove image from array so it is not looped next time. */
                             var temp = $.grep(elements, function(element) {
                                 return !element.loaded;
@@ -160,7 +169,9 @@
         $(window).load(function() {
             update();
         });
-        
+
+        update();
+
         return this;
     };
 

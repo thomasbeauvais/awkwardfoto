@@ -12,6 +12,7 @@ import com.awkwardape.photo.gae.util.GaeUtils;
 import com.awkwardape.photo.model.Image;
 import com.google.appengine.api.blobstore.*;
 import com.google.appengine.api.files.*;
+import com.google.appengine.api.images.CompositeTransform;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.Transform;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,11 +68,11 @@ public class ImageController {
                 // TODO:  I think that the  bytes should already be accessible in the HttpServletRequest..
                 // This is a lot of crap to get the width/height
                 try {
-                    FileService fileService = FileServiceFactory.getFileService();
-                    AppEngineFile blobFile = fileService.getBlobFile(blobKey);
-                    FileReadChannel readChannel = fileService.openReadChannel(blobFile, false);
-                    byte[] imageData = GaeUtils.getBytes(Channels.newInputStream(readChannel));
-                    com.google.appengine.api.images.Image oldImage = ImagesServiceFactory.makeImage(imageData);
+                    FileService fileService                         = FileServiceFactory.getFileService();
+                    AppEngineFile blobFile                          = fileService.getBlobFile(blobKey);
+                    FileReadChannel readChannel                     = fileService.openReadChannel(blobFile, false);
+                    byte[] imageData                                = GaeUtils.getBytes(Channels.newInputStream(readChannel));
+                    com.google.appengine.api.images.Image oldImage  = ImagesServiceFactory.makeImage(imageData);
 
                     image.setWidth( oldImage.getWidth() );
                     image.setHeight( oldImage.getHeight() );
@@ -140,9 +142,11 @@ public class ImageController {
             final ImagesService imagesService                       = ImagesServiceFactory.getImagesService();
             final com.google.appengine.api.images.Image oldImage    = ImagesServiceFactory.makeImageFromBlob(blobKey);
 
-            final Transform resize                                  = ImagesServiceFactory.makeResize( 0, height );
+            final CompositeTransform transform                      = ImagesServiceFactory.makeCompositeTransform();
 
-            final com.google.appengine.api.images.Image newImage    = imagesService.applyTransform(resize, oldImage, ImagesService.OutputEncoding.JPEG);
+            transform.concatenate( ImagesServiceFactory.makeResize( 0, height ) );
+
+            final com.google.appengine.api.images.Image newImage    = imagesService.applyTransform(transform, oldImage, ImagesService.OutputEncoding.JPEG);
 
             final int len                                           = newImage.getImageData().length;
 
@@ -158,7 +162,8 @@ public class ImageController {
 
             res.setContentType( "image/jpg" );
             res.setContentLength(len);
-            res.setHeader("Content-Disposition", "filename=\"" + blobInfo.getFilename() + "\"");
+            res.setHeader("Content-Disposition", "filename=\"" + blobInfo.getFilename() + "("+ newImage.getWidth() + "x" + newImage.getHeight() + ")\"");
+
             res.getOutputStream().write(newImage.getImageData());
             res.getOutputStream().flush();
         } else {
